@@ -1,0 +1,247 @@
+---
+title: "Culture and Goals Study"
+author: "Kate Guan"
+date: "June 19, 2018"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r include=F}
+library(readr)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(lsr)
+library(psych)
+library(formatR)
+knitr::opts_chunk$set(fig.width=6, fig.height=3) 
+```
+
+```{r, include=F} 
+cg_data <- read_csv("/Users/josephteh/desktop/Culture and Self Lab/Culture and Goals Study/cg_data.csv")
+#I create a new variable called sub_culture, where Europeans = 1, East Asians born within Canada = 2, East Asians born outside Canada = 3
+sub_culture <- ifelse(cg_data$culture == 1, 1, ifelse (cg_data$culture == 2 & cg_data$birthplace == 1, 2, 3))
+#The dataset that is being used now is cg_data2
+cg_data2 <- cbind(cg_data, sub_culture)
+sub_culture <- as.integer(cg_data2$sub_culture)
+total_nonuniquefacilitators <- as.numeric(as.character(cg_data2$total_nonuniquefacilitators))
+total_uniquefacilitators <- as.numeric(as.character(cg_data2$total_uniquefacilitators))
+total_specializedfacilitators <- as.numeric(as.character(cg_data2$total_specializedfacilitators))
+total_goals_bestfacilitator <- as.numeric(as.character(cg_data2$goals_bestfacilitator))
+```
+
+#Demographics
+
+```{r, include=F, tidy=T}
+table(cg_data2$sub_culture)
+summary(cg_data2$age)
+describeBy(cg_data2$age, cg_data2$sub_culture)
+table(cg_data2$gender)
+table(cg_data2$sexuality)
+table(cg_data2$relationship_status, cg_data2$sub_culture)
+```
+
+```{r, tidy=T}
+sub_1 <- cg_data2 %>% filter(sub_culture == 1 | sub_culture == 2) 
+#sub_1 represents the subset of Europeans and East Asians born within Canada
+sub_2 <- cg_data2 %>% filter(sub_culture == 1 | sub_culture == 3) 
+#sub_2 represents the subset of Europeans and East Asians born outside Canada
+sub_3 <- cg_data2 %>% filter(sub_culture == 2 | sub_culture == 3)
+#sub_3 represents the subset of East Asians born within and outside Canada
+```
+```{r, include=F, tidy=T}
+summary(cg_data2$relationship_length)
+t.test(relationship_length ~ sub_culture, sub_1)
+cohensD(sub_1$relationship_length, sub_1$sub_culture)
+t.test(relationship_length ~ sub_culture, sub_2)
+cohensD(sub_2$relationship_length, sub_2$sub_culture)
+t.test(relationship_length ~ sub_culture, sub_3)
+cohensD(sub_3$relationship_length, sub_3$sub_culture)
+```
+
+* This study consists of 468 observations and 91 variables.
+  + There are 191 Europeans, 93 East Asians born wtihin Canada, and 184 East Asians born outside of Canada.
+  + The average age of the sample group is 20.5 years. For Europeans, 21 years; East Asians born within Canada, 19.7 years; East Asians born outside Canada, 20.4 years.
+  + There are 120 males, 347 females and 1 unidentified.
+  + In total, there are 403 heterosexuals, 8 homosexuals, 36 bisexuals, 5 queer, 8 uncertain, 1 other.
+  + 273 participants are single, 46 casually dating one person, 3 casually dating more than one person, 115 seriously dating one person but not living together, 26 living with partner, 1 engaged and 4 married.
+  + The average relationship length is 7.855 months and the longest is 120. Simple effects show that the mean relationship length is similar across Europeans, East Asians born within Canada, and East Asians born outside Canada. 
+  + See Appendix for visual summaries.
+
+#Results
+##A. Perceived goal support
+
+```{r, eval=F, tidy=T}
+lapply(cg_data2[,15:18], function(x) describeBy(x, cg_data2$sub_culture))
+lapply(sub_1[,15:18], function(x) t.test(x~sub_1$sub_culture))
+lapply(sub_1[,15:18], function(x) cohensD(x, sub_1$sub_culture))
+lapply(sub_2[,15:18], function(x) t.test(x~sub_2$sub_culture))
+lapply(sub_2[,15:18], function(x) cohensD(x, sub_2$sub_culture))
+lapply(sub_3[,15:18], function(x) t.test(x~sub_3$sub_culture))
+lapply(sub_3[,15:18], function(x) cohensD(x, sub_3$sub_culture))
+```
+
+###Similarities
+* East Asians born within and outside Canada are similar across all perception metrics of **goal support availability**, **amount**, **helpfulness** and **necessity**.
+* Europeans, East Asians born within Canada, and East Asians born outside Canada are similar in terms of their perception of **goal support helpfulness** and **necessity**. 
+
+###Differences
+* Europeans (M = 5.66, SD = 1.14) scored higher on their perception of **goal support availability** than East Asians born within Canada (M = 5.5, SD = 1.25), t(147.99) = 2.05, p < .05, d = 5.26; as well as higher than East Asians born outside Canada (M = 5.26, SD = 1.17), t(355.44) = 4.86, p < .05, d = 3.37.
+* Europeans (M = 5.8, SD = 0.97) also scored higher on their perception of **goal support amount** than East Asians born within Canada (M = 5.24, SD = 1.34), t(159.31) = 2.65, p < .05, d = 4.52; as well as higher than East Asians born outside Canada (M = 5.13, SD = 1.29), t(363.98) = 4.23, p < .05, d = 3.03. 
+* See Appendix for visual summaries.
+
+##B. Average goal details
+```{r, eval=F, tidy=T}
+lapply(cg_data2[,58:66], function(x) describeBy(x,cg_data2$sub_culture)) 
+lapply(sub_1[,58:66], function(x) t.test(x~sub_1$sub_culture))
+lapply(sub_1[,58:66], function(x) cohensD(x, sub_1$sub_culture))
+lapply(sub_2[,58:66], function(x) t.test(x~sub_2$sub_culture))
+lapply(sub_2[,58:66], function(x) cohensD(x, sub_2$sub_culture))
+lapply(sub_3[,58:66], function(x) t.test(x~sub_3$sub_culture))
+lapply(sub_2[,58:66], function(x) cohensD(x, sub_2$sub_culture))
+```
+
+###Similarities
+* Europeans and East Asians born within Canada rate similarly in terms of their **personally-autonomous-reasons** for goal pursuits (pursuing goal for oneself), **relationally-autonomous-reasons** for goal pursuits (pursuing goal for others), **perceived likelihood of success on goals**, and **average effort spent pursuing goals**.
+* East Asians born within and outside Canada are similar in all aspects, except for **feelings of failure** when the goal is not achieved. 
+
+###Differences
+* Europeans (M = 5.98, SD = 0.54) place more **importance on goals** than East Asians born within Canada (M = 5.82, SD = 0.67), t(152.82) = 2.10, p < .05, d = 8.65.
+* Europeans (M = 5.56, SD = 0.67) also score higher on **commitment towards goals** than East Asians born within Canada (M = 5.32, SD = 0.73), t(170.78) = 2.63, p < .05, d = 6.98.
+* Europeans (M = 5.34, SD = 0.82) also indicate higher **motivation towards pursuing goals** than East Asians born within Canada (M = 5.06, SD = 0.89), t(169.81) = 2.60, p < .05, d = 5.68.
+* Europeans (M = 4.46, SD = 0.86) also made higher **average progress toward their goals** than East Asians born within Canada (M = 4.19, SD = 0.78), t(198.1) = 2.63, p < .05, d = 4.47.
+* However, Europeans (M = 5.42, SD = 0.78) have higher associated **negative feelings with failure to achieve goals** than East Asians born within Canada (M = 5.22, SD = 0.76), t(185.16) = 2.01, p < .05, d = 6.28. East Asians born within Canada (M = 5.22, SD = 0.76) scored significantly higher on this metric than their counterparts born outside Canada (M = 4.97, SD = 0.9), t(214.16) = 2.43, p < .05, d = 3.43.
+* Europeans scored significantly higher than East Asians born outside Canada on all goal metrics, at much larger effects, but are still similar in terms of **personally-autonomous-reasons** and **relationally-autonomous-reasons**. 
+* See Appendix for visual summaries.
+
+##C. Well-being and traits
+```{r, eval=F, tidy=T}
+lapply(cg_data2[,44:57], function(x) describeBy(x,cg_data2$sub_culture)) 
+lapply(sub_1[,44:57], function(x) t.test(x~sub_1$sub_culture))
+lapply(sub_1[,44:57], function(x) cohensD(x, sub_1$sub_culture))
+lapply(sub_2[,44:57], function(x) t.test(x~sub_2$sub_culture))
+lapply(sub_2[,44:57], function(x) cohensD(x, sub_2$sub_culture))
+lapply(sub_3[,44:57], function(x) t.test(x~sub_3$sub_culture))
+lapply(sub_3[,44:57], function(x) cohensD(x, sub_3$sub_culture))
+```
+
+###Similarities
+* East Asians born within and outside Canada have similar individual traits across all aspects.
+* There are similarities between Europeans and East Asians born within Canada in terms of **avoidance**, **anxiety**, **agreeableness**, **conscientiousness**, **neuroticism**, **relational mobility**, **prevention-orientation of goals**, and **loneliness**.
+* Europeans and East Asians born outside Canada are similar in terms of **avoidance**, **anxiety**, **agreeableness**, **extraversion**, **self-esteem**, **neuroticism**, **relational mobility**, and **loneliness**.
+
+###Differences
+* Europeans (M = 29, SD = 5.47) tend to have higher **self-esteem** than East Asians born within Canada (M = 27.59, SD = 5.6), t(178.72) = 2.01, p < .05, d = 6.92.
+* Europeans (M = 4.76, SD = 1.16) tend to be more **satisfied with life** than East Asians born within Canada (M = 4.35, SD = 1.3), t(165.35) = 2.57, p < .05, d = 3.57.
+* Europeans (M = 4.20, SD = 1.44) tend to be more **extroverted** than East Asians born within Canada (M = 3.73, SD = 1.42), t(185.08) = 2.58, p < .05, d = 2.53.
+* Europeans (M = 5.25, SD = 1.06) also tend to be more **open** (personality-wise) than East Asians born within Canada (M = 4.55, SD = 0.96), t(200.27) = 5.50, p < .05, d = 4.44; as well as than East Asians born outside Canada. 
+* Europeans (M = 3.53, SD = 0.61) also much more inclined toward **promotion-orientation of goals** than East Asians born within Canada (M = 3.20, SD = 0.61), t(182.86) = 4.3, p < .05, d = 3.78.
+* Interestingly, Europeans (M = 3.53, SD = 0.88) tend to be more **prevention-oriented** in their goals than East Asians born outside Canada (M = 3.32, SD = 0.82), t(363.74) = 2.45, p < .05, d = 1.58. But they are also more **promotion-oriented** in their goals than East Asians born outside Canada (M = 3.23, SD = 0.56), t(372.22) = 4.89, p < .05, d = 1.06.
+* Europeans (M = 5.08, SD = 1.23) are also more **conscientious** than East Asians born outside Canada (M = 4.64, SD = 1.06), t(368.44) = 3.68, p < .05, d = 2.65. 
+* See Appendix for visual summaries.
+
+##D. Facilitators 
+```{r, eval=F, tidy=T}
+lapply(cg_data2[,68:80], function(x) class(x))
+lapply(cg_data2[,68:80], function(x) describeBy(x, cg_data2$sub_culture))
+lapply(sub_1[,74:78], function(x) t.test(x~sub_1$sub_culture))
+lapply(sub_1[,74:78], function(x) cohensD(x~sub_1$sub_culture))
+lapply(sub_2[,74:78], function(x) t.test(x~sub_2$sub_culture))
+lapply(sub_2[,74:78], function(x) cohensD(x~sub_2$sub_culture))
+lapply(sub_3[,74:78], function(x) t.test(x~sub_3$sub_culture))
+lapply(sub_3[,74:78], function(x) cohensD(x~sub_3$sub_culture))
+t.test(sub_2$goals_bestfacilitator~sub_2$sub_culture)
+cohensD(sub_2$goals_bestfacilitator~sub_2$sub_culture)
+t.test(sub_2$total_nonuniquefacilitators~sub_2$sub_culture)
+cohensD(sub_2$total_nonuniquefacilitators~sub_2$sub_culture)
+```
+
+###Similarities
+* Europeans, East Asians born within Canada, and East Asians born outside Canada are similar in terms of **unique facilitators**, **specialized facilitators**, **proportion of specialized facilitators**, and **average goals per facilitator**.
+* Europeans and East Asians born within Canada are similar in terms of **average facilitator per goal**, **total nonunique facilitators**, and **number of goals helped by best facilitator**.
+
+###Differences
+* Europeans (M = 2.56, SD = 0.83) have higher **average facilitator per goal** than East Asians born outside Canada (M = 2.28, SD = 1), t(355.78) = 3.00, p < .05, d = 0.311. 
+* Europeans (M = 4.35, SD = 1.55) have higher **number of goals helped by best facilitator** than East Asians born outside Canada (M = 3.86, SD = 1.54), t(372.67) = 2.99, p < .05, d = 0.31. 
+* Europeans (M = 17.94, SD = 5.84) have more **total nonunique facilitators** than East Asians born outside Canada (M = 15.93, SD = 7.03), t(355.78) = 3.00, p < .05, d = 0.311. 
+* See Appendix for visual summaries.
+
+#Analysis
+
+```{r, eval=F}
+lapply(cg_data2[,75:76], function(x) cor.test(x, cg_data2$overall_progress))
+cor.test(cg_data2$total_nonuniquefacilitators, cg_data2$overall_progress)
+cor.test(cg_data2$goals_bestfacilitator, cg_data2$overall_progress)
+cor.test(cg_data2$avg_facpergoal, cg_data2$overall_progress)
+lapply(cg_data2[,75:76], function(x) cor.test(x, cg_data2$relationship_length))
+cor.test(cg_data2$total_nonuniquefacilitators, cg_data2$relationship_length)
+cor.test(cg_data2$goals_bestfacilitator, cg_data2$relationship_length)
+cor.test(cg_data2$avg_facpergoal, cg_data2$relationship_length)
+lapply(cg_data2[,75:76], function(x) cor.test(x, cg_data2$swls))
+cor.test(cg_data2$total_nonuniquefacilitators, cg_data2$swls)
+cor.test(cg_data2$goals_bestfacilitator, cg_data2$swls)
+cor.test(cg_data2$avg_facpergoal, cg_data2$swls)
+cor.test(cg_data2$avg_facpergoal, cg_data2$goalsupport_availability)
+cor.test(cg_data2$goals_bestfacilitator, cg_data2$goalsupport_availability)
+cor.test(cg_data2$avg_facpergoal, cg_data2$goalsupport_amount)
+cor.test(cg_data2$goals_bestfacilitator, cg_data2$goalsupport_amount)
+```
+
+##Summary
+* The findings for goal support perception are rather surprising, given that East Asian culture is considered to be *collectivist*, but Europeans - who belong to an *individualist* culture - tend to score higher on their perception of **goal support amount** and **availability**.
+* The higher means in both **prevention-orientation** and **promotion-orientation of goals** for Europeans relative to East Asians born outside Canada may at first glance be surprising. But these results are consistent with the findings above that suggest Europeans tend to place significantly more **importance on goals** than East Asians born outside Canada. 
+* The higher **number of nonunique facilitators**, **average facilitator per goal** and **number of goals helped by best facilitator** in Europeans relative to East Asians born outside Canada is rather surprising. Despite being associated with an *individualist* culture, the results show that Europeans tend to value more facilitators per goal. 
+
+##Correlations
+* *The correlations below do not imply causality. There might be something special about these groups that contribute to e.g. greater life satisfaction, and these variables need to be controlled for.*
+* There is positive correlation between **average facilitator per goal** and **goal support availability perception** (r = 0.14), as well as **goal support amount perception** (r = 0.15).
+* There is positive correlation between **number of goals helped by best facilitator** and **goal support availability perception** (r = 0.16), as well as **goal support amount perception** (r = 0.19).
+* There is positive correlation between **total facilitators (unique, nonunique or specialized)** and **overall goal progress** (r = 0.16, r = 0.17, r = 0.12). This does not imply causation, however. It could be that as participants make progress towards goals, they approach more facilitators. As an anecdote, Europeans score higher on **total nonunique facilitators** and **overall goal progress**. 
+* Simple effects show that higher **average number of facilitators per goal** is correlated with **overall goal progress** (r = 0.17). Europeans score higher on both these metrics than East Asians born outside Canada.
+* There is no statistically significant correlation between **total facilitators (unique, nonunique or specialized)** and **relationship length**.
+* There is positive correlation between higher **numer of goals helped by best facilitator** and **relationship length** (r = 0.14).
+* There is positive correlation between **total nonunique facilitators** and **satisfaction with life** (r = 0.12), but none for **unique** or **specialized facilitators**. This suggests that as facilitators help with multiple goals, rather than specializing in one, the participant experiences higher satisfaction. Again, this is merely a simple correlation.
+* There is a positive correlation between higher **number of goals helped by best facilitator** and **satisfaction with life** (r = 0.15).
+* The fact that Europeans have higher **number of goals helped by best facilitator**, **total nonunique facilitators** and **satisfaction with life** than East Asians is consistent with the above correlations.
+* See Appendix for visual representations.
+
+#Appendix
+
+##Demographics
+
+```{r, tidy=TRUE}
+culture_names = c('1'="Europeans", '2'="E. Asians (born within)", '3'="E.Asians (born outside)")
+ggplot(cg_data2, aes(x=years_canada))+geom_bar()+labs(title="Years in Canada by group", x="Year intervals", y="Count")+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))
+```
+
+```{r, tidy=TRUE}
+ggplot(cg_data2, aes(x=relationship_status))+geom_bar(show.legend = T)+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Relationship status by group",x="Relationship status",y="Count")
+```
+
+##Results
+
+```{r, tidy=TRUE}
+ggplot(cg_data2, aes(x=goalsupport_availability,group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal support availability", x="Perception score", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=goalsupport_amount,group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal support amount", x="Perception score", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=overall_importance,group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal importance", x="Overall importance", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=overall_commitment,group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal commitment", x="Overall commitment", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=overall_motivation, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal motivation", x="Overall motivation", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=overall_progress, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal progress", x="Overall progress", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=overall_failurefeelings, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Goal failure feelings", x="Overall failure feelings", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=self_esteem, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Self esteem", x="Self esteem score", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=swls, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Life satisfaction", x="Life satisfaction score", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=total_nonuniquefacilitators, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Total nonunique facilitators", x="Total nonunique facilitators", y="")+scale_y_continuous(labels = scales::percent)
+ggplot(cg_data2, aes(x=goals_bestfacilitator, group="sub_culture"))+geom_bar(aes(y=..prop..))+facet_grid(.~sub_culture, labeller = as_labeller(culture_names))+labs(title="Number of goals helped by best facilitator", x="Goals helped", y="")+scale_y_continuous(labels = scales::percent)
+```
+
+##Analysis
+```{r warning=FALSE, tidy=TRUE}
+qplot(cg_data2$total_nonuniquefacilitators,cg_data2$overall_progress,xlab="Total nonunique facilitators",ylab="Overall goal progress", main="Overall goal progress by group",facets=.~cg_data2$sub_culture)+facet_grid(.~cg_data2$sub_culture,labeller= as_labeller(culture_names))+geom_smooth(method="lm")
+qplot(cg_data2$total_uniquefacilitators,cg_data2$overall_progress,xlab = "Total unique facilitators",ylab="Overall goal progress",main="Overall goal progress by group",facets=.~cg_data2$sub_culture)+facet_grid(.~cg_data2$sub_culture,labeller=as_labeller(culture_names))+geom_smooth(method="lm")
+qplot(cg_data2$total_specializedfacilitators,cg_data2$overall_progress,xlab="Total specialized facilitators",ylab="Overall goal progress",main="Overall goal progress by group",facets=.~cg_data2$sub_culture)+facet_grid(.~cg_data2$sub_culture,labeller=as_labeller(culture_names))+geom_smooth(method="lm")
+qplot(cg_data2$avg_facpergoal,cg_data2$overall_progress,xlab="Average facilitator per goal",ylab="Overall goal progress",main="Overall goal progress by group", facets=.~cg_data2$sub_culture)+facet_grid(.~cg_data2$sub_culture, labeller=as_labeller(culture_names))+geom_smooth(method="lm")
+
+qplot(cg_data2$total_nonuniquefacilitators,cg_data2$swls,xlab="Total nonunique facilitators",ylab="Satisfaction score",main="Satisfaction with life by group", facets=.~cg_data2$sub_culture)+facet_grid(.~cg_data2$sub_culture,labeller=as_labeller(culture_names))+geom_smooth(method="lm")
+qplot(cg_data2$avg_facpergoal,cg_data2$swls,xlab="Average facilitator per goal", ylab="Satisfaction score",main="Satisfaction with life by group",facets=.~cg_data2$sub_culture)+facet_grid(.~cg_data2$sub_culture,labeller=as_labeller(culture_names))+geom_smooth(method="lm")
+```
